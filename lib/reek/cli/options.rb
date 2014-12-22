@@ -62,53 +62,11 @@ EOB
 
       def set_options
         @parser.banner = banner
-        @parser.separator 'Common options:'
-        @parser.on('-h', '--help', 'Show this message') do
-          @command_class = HelpCommand
-        end
-        @parser.on('-v', '--version', 'Show version') do
-          @command_class = VersionCommand
-        end
-
-        @parser.separator "\nConfiguration:"
-        @parser.on('-c', '--config FILE', 'Read configuration options from FILE') do |file|
-          @config_files << file
-        end
-        @parser.on('--smell SMELL', 'Detect smell SMELL (default is all enabled smells)') do |smell|
-          @smells_to_detect << smell
-        end
-
-        @parser.separator "\nReport formatting:"
-        @parser.on('-o', '--[no-]color', 'Use colors for the output (this is the default)') do |opt|
-          @colored = opt
-        end
-        @parser.on('-q', '--quiet', 'Suppress headings for smell-free source files (this is the default)') do |_opt|
-          @strategy = Report::Strategy::Quiet
-        end
-        @parser.on('-V', '--no-quiet', '--verbose', 'Show headings for smell-free source files') do |_opt|
-          @strategy = Report::Strategy::Verbose
-        end
-        @parser.on('-U', '--ultra-verbose', 'Be as explanatory as possible') do |_opt|
-          @warning_formatter = Report::UltraVerboseWarningFormattter
-        end
-        @parser.on('-n', '--no-line-numbers', 'Suppress line numbers from the output') do
-          @warning_formatter = Report::SimpleWarningFormatter
-        end
-        @parser.on('--line-numbers', 'Show line numbers in the output (this is the default)') do
-          @warning_formatter = Report::WarningFormatterWithLineNumbers
-        end
-        @parser.on('-s', '--single-line', 'Show IDE-compatible single-line-per-warning') do
-          @warning_formatter = Report::SingleLineWarningFormatter
-        end
-        @parser.on('-S', '--sort-by-issue-count', 'Sort by "issue-count", listing the "smelliest" files first') do
-          @sort_by_issue_count = true
-        end
-        @parser.on('-y', '--yaml', 'Report smells in YAML format') do
-          @report_class = Report::YamlReport
-        end
-        @parser.on('-H', '--html', 'Report smells in HTML format') do
-          @report_class = Report::HtmlReport
-        end
+        set_common_options
+        @parser.separator "\n"
+        set_configuration_options
+        @parser.separator "\n"
+        set_report_formatting_options
       end
 
       def parse
@@ -141,6 +99,82 @@ EOB
 
       def help_text
         @parser.to_s
+      end
+
+      private
+
+      def set_common_options
+        @parser.separator 'Common options:'
+        @parser.on('-h', '--help', 'Show this message') do
+          @command_class = HelpCommand
+        end
+        @parser.on('-v', '--version', 'Show version') do
+          @command_class = VersionCommand
+        end
+      end
+
+      def set_configuration_options
+        @parser.separator 'Configuration:'
+        @parser.on('-c', '--config FILE', 'Read configuration options from FILE') do |file|
+          @config_files << file
+        end
+        @parser.on('--smell SMELL', 'Detect smell SMELL (default is all enabled smells)') do |smell|
+          @smells_to_detect << smell
+        end
+      end
+
+      def set_report_class
+        @parser.on('-y', '--yaml', 'Report smells in YAML format') do
+          @report_class = Report::YamlReport
+        end
+        @parser.on('-H', '--html', 'Report smells in HTML format') do
+          @report_class = Report::HtmlReport
+        end
+      end
+
+      def set_report_color
+        @parser.on('-o', '--[no-]color', 'Use colors for the output (this is the default)') do |opt|
+          @colored = opt
+        end
+      end
+
+      def set_report_formatting_options
+        @parser.separator 'Report formatting:'
+        set_report_color
+        set_report_strategy
+        set_report_warning_formatter
+        set_report_sorting
+        set_report_class
+      end
+
+      def set_report_sorting
+        @parser.on('-S', '--sort-by-issue-count', 'Sort by "issue-count", listing the "smelliest" files first') do
+          @sort_by_issue_count = true
+        end
+      end
+
+      def set_report_strategy
+        @parser.on('-q', '--quiet', 'Suppress headings for smell-free source files (this is the default)') do |_opt|
+          @strategy = Report::Strategy::Quiet
+        end
+        @parser.on('-V', '--no-quiet', '--verbose', 'Show headings for smell-free source files') do |_opt|
+          @strategy = Report::Strategy::Verbose
+        end
+      end
+
+      def set_report_warning_formatter
+        @parser.on('-U', '--ultra-verbose', 'Be as explanatory as possible') do |_opt|
+          @warning_formatter = Report::UltraVerboseWarningFormattter
+        end
+        @parser.on('-n', '--no-line-numbers', 'Suppress line numbers from the output') do
+          @warning_formatter = Report::SimpleWarningFormatter
+        end
+        @parser.on('--line-numbers', 'Show line numbers in the output (this is the default)') do
+          @warning_formatter = Report::WarningFormatterWithLineNumbers
+        end
+        @parser.on('-s', '--single-line', 'Show IDE-compatible single-line-per-warning') do
+          @warning_formatter = Report::SingleLineWarningFormatter
+        end
       end
     end
   end

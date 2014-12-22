@@ -5,7 +5,7 @@ AllCops:
 
 # FIXME: Lower the ABC size by fixing the biggest offenders
 Metrics/AbcSize:
-  Max: 25
+  Max: 20
 
 # FIXME: Make the class shorter
 Metrics/ClassLength:
@@ -27,7 +27,7 @@ Style/Documentation:
 
 # FIXME: Lower the method length by fixing the biggest offenders
 Metrics/MethodLength:
-  Max: 46
+  Max: 26
 
 # Be a little more lenient with line length
 Metrics/LineLength:
